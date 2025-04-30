@@ -50,8 +50,8 @@
         document.getElementById("result").innerHTML = `バーコード: ${code}<br>検索中...`;
 
         try {
-          const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
-          const json = await res.json();
+         const res = await fetch(`https://corsproxy.io/?https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+
           if (json.status === 1) {
             const product = json.product.product_name || "不明";
             const kcal = json.product.nutriments["energy-kcal_100g"] || "不明";
