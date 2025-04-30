@@ -50,7 +50,9 @@
         document.getElementById("result").innerHTML = `バーコード: ${code}<br>検索中...`;
 
         try {
-         const res = await fetch(`https://corsproxy.io/?https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+         const proxyUrl = `https://api.allorigins.win/raw?url=https://world.openfoodfacts.org/api/v0/product/${code}.json`;
+const res = await fetch(proxyUrl);
+
 
           if (json.status === 1) {
             const product = json.product.product_name || "不明";
