@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>バーコードカロリーチェッカー</title>
+  <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
+  <style>
+    #scanner { width: 100%; height: 300px; border: 1px solid gray; }
+    body { font-family: sans-serif; padding: 1em; }
+  </style>
+</head>
+<body>
+  <h2>バーコードカロリーチェッカー📱</h2>
+  <button onclick="startScanner()">バーコードをスキャン</button>
+  <div id="scanner"></div>
+  <div id="result"></div>
+
+  <script>
+    function startScanner() {
+      Quagga.init({
+        inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#scanner') },
+        decoder: { readers: ["ean_reader"] }
+      }, function (err) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        Quagga.start();
+      });
+
+      Quagga.onDetected(async function (data) {
+        const code = data.codeResult.code;
+        document.getElementById("result").innerHTML = `バーコード: ${code}<br>検索中...`;
+        const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+        const json = await res.json();
+        if (json.status === 1) {
+          const product = json.product.product_name || "不明";
+          const kcal = json.product.nutriments["energy-kcal_100g"] || "不明";
+          document.getElementById("result").innerHTML = `商品名: ${product}<br>カロリー（100g）: ${kcal} kcal<br>JANコード: ${code}`;
+          Quagga.stop();
+        } else {
+          document.getElementById("result").innerHTML = `商品が見つかりませんでした`;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
