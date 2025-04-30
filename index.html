@@ -52,6 +52,8 @@
         try {
          const proxyUrl = `https://api.allorigins.win/raw?url=https://world.openfoodfacts.org/api/v0/product/${code}.json`;
 const res = await fetch(proxyUrl);
+const json = await res.json();  // ←この行が必要！！
+
 
 
           if (json.status === 1) {
